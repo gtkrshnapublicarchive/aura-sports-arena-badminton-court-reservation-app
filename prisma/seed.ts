@@ -219,6 +219,76 @@ async function main() {
       rating: 5,
       isPublished: true,
     },
+    {
+      userId: null,
+      author: "Elena Rostova",
+      role: "Mixed Doubles Competitor",
+      tag: "Tournament Player",
+      quote:
+        "The shock-absorbing synthetic rubber flooring here provides unmatched traction and joint protection during explosive directional shifts and jump smashes.",
+      rating: 5,
+      isPublished: true,
+    },
+    {
+      userId: null,
+      author: "Marcus Chen",
+      role: "Morning Routine Regular",
+      tag: "Verified Player",
+      quote:
+        "Booking 07:00 AM dawn sessions before office hours is seamless. The lighting is warmed up and courts are swept clean every morning without fail.",
+      rating: 4,
+      isPublished: true,
+    },
+    {
+      userId: null,
+      author: "Sarah Jenkins",
+      role: "Junior Academy Parent",
+      tag: "Academy Parent",
+      quote:
+        "My twins train here on Saturday mornings. The reception team is incredibly respectful, the viewing lounge is comfortable, and court allocation is always punctual.",
+      rating: 5,
+      isPublished: true,
+    },
+    {
+      userId: null,
+      author: "David Thorne",
+      role: "Senior League Veteran",
+      tag: "Club Member",
+      quote:
+        "The high-bay LED lighting angle is carefully aligned. Even during high trajectory clears and back-court lift returns, you never lose sight of the shuttlecock to ceiling glare.",
+      rating: 5,
+      isPublished: true,
+    },
+    {
+      userId: null,
+      author: "Kenji Sato",
+      role: "Collegiate Badminton Athlete",
+      tag: "League Player",
+      quote:
+        "Laminar climate airflow is regulated to perfection. Zero artificial cross-draft means shuttle trajectory remains completely predictable and tournament-accurate.",
+      rating: 5,
+      isPublished: true,
+    },
+    {
+      userId: null,
+      author: "Aria Montgomery",
+      role: "Casual Weekend Player",
+      tag: "Verified Player",
+      quote:
+        "Being able to pre-reserve precision strung carbon attack rackets and a tube of feather shuttles with the court booking eliminates gear carrying hassles entirely.",
+      rating: 5,
+      isPublished: true,
+    },
+    {
+      userId: null,
+      author: "Lucas Vance",
+      role: "Corporate Sparring Organizer",
+      tag: "Draft Review",
+      quote:
+        "We host Friday night inter-department tournaments here. Court staff are very accommodating when we need adjacent courts reserved in consecutive time blocks.",
+      rating: 4,
+      isPublished: false,
+    },
   ];
 
   for (const t of testimonials) {
