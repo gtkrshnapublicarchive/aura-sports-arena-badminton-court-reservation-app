@@ -187,6 +187,50 @@ async function main() {
     }
   }
 
+  // 6. Seed Testimonials
+  const testimonials = [
+    {
+      userId: playerJulian.id,
+      author: "Julian Hayes",
+      role: "Amateur League Captain",
+      tag: "Verified Player",
+      quote:
+        "Before this system, our post-work Thursday matches were constantly vulnerable to double-booking conflicts. Now I reserve Court 2 for 19:00 - 21:00 with two attack rackets right from my phone.",
+      rating: 5,
+      isPublished: true,
+    },
+    {
+      userId: playerMaya.id,
+      author: "Maya Lin",
+      role: "Weekend Club Organizer",
+      tag: "Club Member",
+      quote:
+        "The real-time availability grid and instant cancellation transparency gave our 12-member club total certainty. We can check slots during lunchtime and confirm attendance immediately.",
+      rating: 5,
+      isPublished: true,
+    },
+    {
+      userId: marshal.id,
+      author: "Tariq Shift Marshal",
+      role: "Front Desk Operations",
+      tag: "Arena Staff",
+      quote:
+        "At the desk, front-counter check-ins now take under 20 seconds. The 15-minute no-show release rule keeps courts occupied and makes walk-in players genuinely happy.",
+      rating: 5,
+      isPublished: true,
+    },
+  ];
+
+  for (const t of testimonials) {
+    const existing = await prisma.testimonial.findFirst({
+      where: { author: t.author },
+    });
+    if (!existing) {
+      await prisma.testimonial.create({ data: t });
+    }
+  }
+  console.log(`[OK] Seeded ${testimonials.length} arena testimonials.`);
+
   console.log("[*] Database seed complete.");
 }
 

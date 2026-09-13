@@ -11,6 +11,10 @@ import { setTestCookie, clearTestCookies } from "../src/core/auth/cookies";
 import { Role, SlotStatus } from "@prisma/client";
 import { NextRequest } from "next/server";
 import { proxy } from "../src/proxy";
+import { savePlayerTestimonialAction } from "../src/features/testimonials/actions/save-player-testimonial.action";
+import { deleteTestimonialAction } from "../src/features/testimonials/actions/delete-testimonial.action";
+import { toggleTestimonialPublishAction } from "../src/features/testimonials/actions/toggle-testimonial-publish.action";
+import { getPublishedTestimonials, getUserTestimonial } from "../src/features/testimonials/queries/get-testimonials.query";
 
 async function setSession(user: { id: string; email: string; name: string; role: Role }) {
   const token = await signSessionToken({
@@ -273,6 +277,57 @@ async function runTests() {
     switchSessionOnLogin.cookies.get(AUTH_COOKIE_NAME)?.value === "",
     "Explicit switch request to /login?switch=true purges active session cookie"
   );
+
+  // 9. Testimonial Management & Moderation Tests
+  console.log("\n[*] Running Testimonial Management Tests...");
+  await setSession(julian);
+  const saveTestimonialRes = await savePlayerTestimonialAction({
+    role: "League Captain",
+    tag: "Verified Member",
+    quote: "Exceptional rubber court grip and tournament lighting setup.",
+    rating: 5,
+    isPublished: true,
+  });
+  assert(saveTestimonialRes.success, "Player successfully submitted a testimonial");
+
+  const julianTestimonial = await getUserTestimonial(julian.id);
+  assert(
+    julianTestimonial !== null &&
+      julianTestimonial.quote === "Exceptional rubber court grip and tournament lighting setup.",
+    "User testimonial accurately persisted with user relationship"
+  );
+
+  // Staff moderation: unpublish
+  await setSession(marshal);
+  if (julianTestimonial) {
+    const unpublishRes = await toggleTestimonialPublishAction({
+      id: julianTestimonial.id,
+      isPublished: false,
+    });
+    assert(unpublishRes.success, "Staff marshal successfully unpublished testimonial");
+
+    const publishedList = await getPublishedTestimonials();
+    assert(
+      !publishedList.some((t) => t.id === julianTestimonial.id),
+      "Unpublished testimonial excluded from landing page query"
+    );
+
+    // Re-publish
+    await toggleTestimonialPublishAction({
+      id: julianTestimonial.id,
+      isPublished: true,
+    });
+
+    // Foreign player delete attempt (Maya attempting to delete Julian's testimonial)
+    await setSession(maya);
+    const unauthorizedDelete = await deleteTestimonialAction({ id: julianTestimonial.id });
+    assert(!unauthorizedDelete.success, "Foreign player unauthorized to delete testimonial");
+
+    // Owner delete
+    await setSession(julian);
+    const ownerDelete = await deleteTestimonialAction({ id: julianTestimonial.id });
+    assert(ownerDelete.success, "Owner player successfully deleted testimonial");
+  }
 
   console.log("───────────────────────────────────────────────────────────────");
   console.log(`Results: ${passed}/${total} test suites passed cleanly.`);
