@@ -171,7 +171,7 @@ This application serves **two primary user roles**:
 
 | Layer / Component | Technology Choice | Version / Tooling | Architectural Rationale |
 |---|---|---|---|
-| Fullstack Framework | Next.js | 15+ (App Router) | React Server Components (RSC) for instantaneous schedule rendering; Server Actions for atomic booking mutations. |
+| Fullstack Framework | Next.js | 16 (App Router, Turbopack) | React Server Components (RSC) for instantaneous schedule rendering; Server Actions for atomic booking mutations. |
 | Language & Runtime | TypeScript / Node.js | TypeScript 5+ / Node.js 22 LTS | End-to-end static type contracts from database schema to UI components. |
 | UI & Styling Engine | Tailwind CSS | 4.x | Utility-first responsive styling with clean sports-matrix layout and neutral editorial palettes. |
 | Relational Database | PostgreSQL | 16+ Alpine | Native transactional concurrency and row-level locking essential to prevent court double-booking race conditions. |
@@ -249,6 +249,7 @@ This application serves **two primary user roles**:
 2. **Post-Deadline Cancellation:** A player cancelling less than 2 hours before game time is blocked by the application.
 3. **Double Allocation:** Two concurrent sessions booking the exact same court-hour combination must never both receive confirmation.
 4. **Maintenance Override by Player:** Players booking courts tagged as `Maintenance` is strictly prevented at database level.
+5. **Public Exposure of Staff Portals:** Exposing staff/marshal authentication interfaces, role toggle tabs, or operational console access links on public-facing screens is strictly prohibited. Staff authentication must remain segregated on dedicated internal routes (e.g., `/marshal/login`) with strict server-side role lockout preventing staff logins through public player forms.
 
 ---
 
