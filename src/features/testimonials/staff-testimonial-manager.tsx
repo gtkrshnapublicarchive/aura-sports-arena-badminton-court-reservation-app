@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Star } from "lucide-react";
 import { TestimonialItem } from "./testimonials.types";
 import { toggleTestimonialPublishAction } from "./actions/toggle-testimonial-publish.action";
 import { deleteTestimonialAction } from "./actions/delete-testimonial.action";
@@ -75,8 +76,9 @@ export function StaffTestimonialManager({ initialTestimonials }: Props) {
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#eef2ec] text-[#5a8357]">
                     {item.tag}
                   </span>
-                  <span className="text-[10px] font-mono text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded">
-                    {item.rating}&#9733;
+                  <span className="text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded inline-flex items-center gap-0.5">
+                    <span>{item.rating}</span>
+                    <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
                   </span>
                 </div>
                 <p className="text-xs text-neutral-600 italic line-clamp-2 leading-relaxed">

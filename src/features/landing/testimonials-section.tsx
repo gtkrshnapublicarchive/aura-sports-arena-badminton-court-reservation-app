@@ -1,4 +1,5 @@
 import { getPublishedTestimonials } from "@/features/testimonials/queries/get-testimonials.query";
+import { Star } from "lucide-react";
 import Link from "next/link";
 
 export async function TestimonialsSection() {
@@ -70,9 +71,10 @@ export async function TestimonialsSection() {
               <div>
                 <div className="flex items-center gap-1 mb-3">
                   {Array.from({ length: item.rating || 5 }).map((_, starIdx) => (
-                    <span key={starIdx} className="text-amber-500 text-xs">
-                      &#9733;
-                    </span>
+                    <Star
+                      key={starIdx}
+                      className="w-3.5 h-3.5 fill-amber-400 text-amber-400"
+                    />
                   ))}
                 </div>
                 <p className="text-xs text-neutral-600 leading-relaxed italic">
