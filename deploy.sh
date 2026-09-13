@@ -46,7 +46,7 @@ echo "────────────────────────�
 echo "[OK] Deployment successfully verified and ready."
 echo "     Application URL: http://localhost:3000"
 echo "     Health Endpoint: http://localhost:3000/api/health"
-echo "     Staff Portal:    http://localhost:3000/login?staff=true"
+echo "     Staff Gateway:   http://localhost:3000/marshal/login"
 echo "     Staff Account:   marshal@aura.local / password123"
 echo "     Player Account:  julian@example.com / password123"
 echo "═══════════════════════════════════════════════════════════════"
