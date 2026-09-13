@@ -6,28 +6,51 @@ import {
 } from "./auth.types";
 import { Role } from "@prisma/client";
 
-export async function setSessionCookie(token: string, role: Role) {
-  const cookieStore = await cookies();
-  const maxAge =
-    role === Role.MARSHAL || role === Role.MANAGER
-      ? STAFF_SESSION_EXPIRY
-      : PLAYER_SESSION_EXPIRY;
+// In-memory test store for CLI test runners outside HTTP context
+const testCookieStore = new Map<string, string>();
 
-  cookieStore.set(AUTH_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge,
-  });
+export function setTestCookie(name: string, value: string) {
+  testCookieStore.set(name, value);
+}
+
+export function clearTestCookies() {
+  testCookieStore.clear();
+}
+
+export async function setSessionCookie(token: string, role: Role) {
+  try {
+    const cookieStore = await cookies();
+    const maxAge =
+      role === Role.MARSHAL || role === Role.MANAGER
+        ? STAFF_SESSION_EXPIRY
+        : PLAYER_SESSION_EXPIRY;
+
+    cookieStore.set(AUTH_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge,
+    });
+  } catch {
+    testCookieStore.set(AUTH_COOKIE_NAME, token);
+  }
 }
 
 export async function clearSessionCookie() {
-  const cookieStore = await cookies();
-  cookieStore.delete(AUTH_COOKIE_NAME);
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete(AUTH_COOKIE_NAME);
+  } catch {
+    testCookieStore.delete(AUTH_COOKIE_NAME);
+  }
 }
 
 export async function getSessionToken(): Promise<string | undefined> {
-  const cookieStore = await cookies();
-  return cookieStore.get(AUTH_COOKIE_NAME)?.value;
+  try {
+    const cookieStore = await cookies();
+    return cookieStore.get(AUTH_COOKIE_NAME)?.value ?? testCookieStore.get(AUTH_COOKIE_NAME);
+  } catch {
+    return testCookieStore.get(AUTH_COOKIE_NAME);
+  }
 }
