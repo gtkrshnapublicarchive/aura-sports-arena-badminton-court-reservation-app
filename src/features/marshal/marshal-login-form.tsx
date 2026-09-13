@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 export function MarshalLoginForm() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("marshal@aura.local");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,16 +33,6 @@ export function MarshalLoginForm() {
       setError("An unexpected network error occurred");
       setIsLoading(false);
     }
-  };
-
-  const handleQuickFill = (role: "marshal" | "manager") => {
-    if (role === "marshal") {
-      setEmail("marshal@aura.local");
-    } else {
-      setEmail("manager@aura.local");
-    }
-    setPassword("password123");
-    setError(null);
   };
 
   return (
@@ -69,6 +59,7 @@ export function MarshalLoginForm() {
         <Input
           label="Staff Email Address"
           type="email"
+          placeholder="staff@aura.local"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -76,6 +67,7 @@ export function MarshalLoginForm() {
         <Input
           label="Security Password"
           type="password"
+          placeholder="Enter authorized staff password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -85,28 +77,6 @@ export function MarshalLoginForm() {
           Authorize & Enter Console
         </Button>
       </form>
-
-      <div className="mt-6 pt-5 border-t border-black/8">
-        <div className="text-[11px] text-neutral-400 font-mono mb-2 text-center">
-          Internal Duty Presets
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => handleQuickFill("marshal")}
-            className="flex-1 py-1.5 px-2 rounded-lg border border-black/8 text-[11px] text-neutral-600 hover:bg-[#fbfbfa] transition-colors cursor-pointer"
-          >
-            Marshal (Tariq)
-          </button>
-          <button
-            type="button"
-            onClick={() => handleQuickFill("manager")}
-            className="flex-1 py-1.5 px-2 rounded-lg border border-black/8 text-[11px] text-neutral-600 hover:bg-[#fbfbfa] transition-colors cursor-pointer"
-          >
-            Facility Manager
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

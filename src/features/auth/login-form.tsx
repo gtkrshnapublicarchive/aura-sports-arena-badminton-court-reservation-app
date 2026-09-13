@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 export function LoginForm() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("julian@example.com");
-  const [password, setPassword] = useState("password123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,12 +37,6 @@ export function LoginForm() {
     }
   };
 
-  const handleQuickFill = () => {
-    setEmail("julian@example.com");
-    setPassword("password123");
-    setError(null);
-  };
-
   return (
     <div className="w-full max-w-md bg-white rounded-3xl border border-black/8 p-8 shadow-xs">
       <div className="mb-6">
@@ -67,6 +61,7 @@ export function LoginForm() {
         <Input
           label="Email Address"
           type="email"
+          placeholder="player@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -74,6 +69,7 @@ export function LoginForm() {
         <Input
           label="Password"
           type="password"
+          placeholder="Enter your account password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -83,17 +79,6 @@ export function LoginForm() {
           Sign In to Aura
         </Button>
       </form>
-
-      <div className="mt-6 pt-5 border-t border-black/8 flex items-center justify-between">
-        <span className="text-[11px] text-neutral-400 font-mono">Demo Account</span>
-        <button
-          type="button"
-          onClick={handleQuickFill}
-          className="py-1 px-3 rounded-lg border border-black/8 text-[11px] text-neutral-600 hover:bg-[#fbfbfa] transition-colors cursor-pointer"
-        >
-          Fill Player (Julian)
-        </button>
-      </div>
     </div>
   );
 }
