@@ -44,11 +44,11 @@ export default async function ProfileSettingsPage() {
 
         {profile.role === "PLAYER" && (
           <>
-            <PlayerSettingsForm profile={profile} />
             <PlayerTestimonialForm
               initialTestimonial={playerTestimonial}
               userName={profile.name}
             />
+            <PlayerSettingsForm profile={profile} />
           </>
         )}
         {profile.role === "MARSHAL" && (
