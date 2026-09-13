@@ -93,6 +93,12 @@ export async function Navbar() {
                 Master Schedule
               </Link>
               <Link
+                href="/marshal/testimonials"
+                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
+              >
+                Testimonials
+              </Link>
+              <Link
                 href="/profile"
                 className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
               >

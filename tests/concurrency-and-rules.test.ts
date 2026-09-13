@@ -268,6 +268,17 @@ async function runTests() {
     "Unauthorized visitor to /marshal is redirected to /login per PRD 6.3"
   );
 
+  const playerToMarshalTestimonials = await proxy(
+    new NextRequest("http://localhost:3000/marshal/testimonials", {
+      headers: { cookie: `${AUTH_COOKIE_NAME}=${playerToken}` },
+    })
+  );
+  assert(
+    playerToMarshalTestimonials.status === 307 &&
+      Boolean(playerToMarshalTestimonials.headers.get("location")?.startsWith("http://localhost:3000/login")),
+    "Player navigating to /marshal/testimonials is blocked and redirected to /login"
+  );
+
   const switchSessionOnLogin = await proxy(
     new NextRequest("http://localhost:3000/login?switch=true", {
       headers: { cookie: `${AUTH_COOKIE_NAME}=${playerToken}` },

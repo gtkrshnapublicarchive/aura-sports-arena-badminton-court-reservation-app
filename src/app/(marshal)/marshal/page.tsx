@@ -1,5 +1,6 @@
 import { format, addDays, isSameDay } from "date-fns";
 import Link from "next/link";
+import { MessageSquare } from "lucide-react";
 import { requireMarshal } from "@/core/auth/guards";
 import { getMasterSchedule } from "@/features/marshal/get-master-schedule.query";
 import { getActiveRentalItems } from "@/features/rentals/get-rentals.query";
@@ -57,6 +58,13 @@ export default async function MarshalPage({ searchParams }: MarshalPageProps) {
           </div>
 
           <div className="flex items-center gap-3">
+            <Link
+              href="/marshal/testimonials"
+              className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-black/10 bg-white hover:bg-[#fbfbfa] text-xs font-medium text-[#252724] transition-colors shadow-xs"
+            >
+              <MessageSquare className="w-4 h-4 text-[#5a8357]" />
+              <span>Moderate Testimonials</span>
+            </Link>
             <Link
               href="/profile"
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-black/10 bg-white hover:bg-[#fbfbfa] text-xs font-medium text-[#252724] transition-colors shadow-xs"
