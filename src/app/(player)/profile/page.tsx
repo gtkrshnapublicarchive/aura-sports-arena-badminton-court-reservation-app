@@ -5,6 +5,9 @@ import { ProfileHeader } from "@/features/profile/profile-header";
 import { PlayerSettingsForm } from "@/features/profile/player-settings-form";
 import { MarshalSettingsForm } from "@/features/profile/marshal-settings-form";
 import { ManagerSettingsForm } from "@/features/profile/manager-settings-form";
+import { getUserTestimonial, getAllTestimonials } from "@/features/testimonials/queries/get-testimonials.query";
+import { PlayerTestimonialForm } from "@/features/testimonials/player-testimonial-form";
+import { StaffTestimonialManager } from "@/features/testimonials/staff-testimonial-manager";
 import { redirect } from "next/navigation";
 
 export default async function ProfileSettingsPage() {
@@ -14,6 +17,11 @@ export default async function ProfileSettingsPage() {
   if (!profile) {
     redirect("/login");
   }
+
+  const [playerTestimonial, allTestimonials] = await Promise.all([
+    profile.role === "PLAYER" ? getUserTestimonial(profile.id) : null,
+    profile.role !== "PLAYER" ? getAllTestimonials() : [],
+  ]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fbfbfa]">
@@ -34,9 +42,27 @@ export default async function ProfileSettingsPage() {
 
         <ProfileHeader profile={profile} />
 
-        {profile.role === "PLAYER" && <PlayerSettingsForm profile={profile} />}
-        {profile.role === "MARSHAL" && <MarshalSettingsForm profile={profile} />}
-        {profile.role === "MANAGER" && <ManagerSettingsForm profile={profile} />}
+        {profile.role === "PLAYER" && (
+          <>
+            <PlayerSettingsForm profile={profile} />
+            <PlayerTestimonialForm
+              initialTestimonial={playerTestimonial}
+              userName={profile.name}
+            />
+          </>
+        )}
+        {profile.role === "MARSHAL" && (
+          <>
+            <MarshalSettingsForm profile={profile} />
+            <StaffTestimonialManager initialTestimonials={allTestimonials} />
+          </>
+        )}
+        {profile.role === "MANAGER" && (
+          <>
+            <ManagerSettingsForm profile={profile} />
+            <StaffTestimonialManager initialTestimonials={allTestimonials} />
+          </>
+        )}
       </main>
     </div>
   );
