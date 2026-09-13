@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PLAYER
+  MARSHAL
+  MANAGER
+}
+
+enum SlotStatus {
+  AVAILABLE
+  BOOKED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+  MAINTENANCE
+}
+
+enum BookingStatus {
+  BOOKED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum ItemType {
+  RACKET
+  SHUTTLECOCK
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  phone        String
+  name         String
+  passwordHash String
+  role         Role      @default(PLAYER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  bookings     Booking[]
+
+  @@map("users")
+}
+
+model Court {
+  id          String      @id @default(cuid())
+  name        String
+  courtNumber Int         @unique
+  surfaceType String      @default("Synthetic Rubber")
+  hourlyRate  Int         @default(50) // Base rate in AUR
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  slots       CourtSlot[]
+
+  @@map("courts")
+}
+
+model CourtSlot {
+  id                String      @id @default(cuid())
+  courtId           String
+  court             Court       @relation(fields: [courtId], references: [id], onDelete: Cascade)
+  date              String      // Format YYYY-MM-DD
+  startHour         Int         // 7 to 22 (representing 07:00 to 22:00 start)
+  endHour           Int         // 8 to 23 (representing 08:00 to 23:00 end)
+  status            SlotStatus  @default(AVAILABLE)
+  isPeak            Boolean     @default(false) // 18:00 - 22:00
+  maintenanceReason String?
+  bookingId         String?
+  booking           Booking?    @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@unique([courtId, date, startHour])
+  @@index([date, courtId])
+  @@index([status])
+  @@map("court_slots")
+}
+
+model RentalItem {
+  id                   String              @id @default(cuid())
+  name                 String
+  itemType             ItemType
+  ratePerUnit          Int                 // in AUR
+  maxQuantityPerBooking Int                @default(4)
+  isActive             Boolean             @default(true)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  bookingRentals       BookingRentalItem[]
+
+  @@map("rental_items")
+}
+
+model Booking {
+  id               String              @id @default(cuid())
+  bookingReference String              @unique
+  userId           String
+  user             User                @relation(fields: [userId], references: [id], onDelete: Restrict)
+  status           BookingStatus       @default(BOOKED)
+  isWalkIn         Boolean             @default(false)
+  guestName        String?
+  guestPhone       String?
+  totalAmount      Int                 // in AUR
+  notes            String?
+  cancelledAt      DateTime?
+  checkedInAt      DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  slots            CourtSlot[]
+  rentals          BookingRentalItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("bookings")
+}
+
+model BookingRentalItem {
+  id           String     @id @default(cuid())
+  bookingId    String
+  booking      Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  rentalItemId String
+  rentalItem   RentalItem @relation(fields: [rentalItemId], references: [id], onDelete: Restrict)
+  quantity     Int
+  unitRate     Int        // Snapshot rate at booking time in AUR
+  subtotal     Int        // quantity * unitRate
+
+  @@unique([bookingId, rentalItemId])
+  @@map("booking_rental_items")
+}
