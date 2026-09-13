@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/core/auth/session";
 import { logoutAction } from "@/features/auth/logout.action";
 import { Badge } from "./badge";
+import { NavLink } from "./nav-link";
 import { Role } from "@prisma/client";
 
 export async function Navbar() {
@@ -29,18 +30,8 @@ export async function Navbar() {
         <nav className="flex items-center gap-6 text-sm">
           {!user ? (
             <>
-              <Link
-                href="/schedule"
-                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
-              >
-                Court Schedule
-              </Link>
-              <Link
-                href="/login"
-                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
-              >
-                Log In
-              </Link>
+              <NavLink href="/schedule">Court Schedule</NavLink>
+              <NavLink href="/login">Log In</NavLink>
               <Link
                 href="/register"
                 className="px-4 py-2 rounded-xl bg-[#252724] hover:bg-[#3b3e39] text-white text-xs font-medium transition-colors"
@@ -50,24 +41,9 @@ export async function Navbar() {
             </>
           ) : user.role === Role.PLAYER ? (
             <>
-              <Link
-                href="/schedule"
-                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
-              >
-                Book Court
-              </Link>
-              <Link
-                href="/my-bookings"
-                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
-              >
-                My Bookings
-              </Link>
-              <Link
-                href="/profile"
-                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
-              >
-                Profile
-              </Link>
+              <NavLink href="/schedule">Book Court</NavLink>
+              <NavLink href="/my-bookings">My Bookings</NavLink>
+              <NavLink href="/profile">Profile</NavLink>
               <div className="flex items-center gap-3 pl-2 border-l border-black/8">
                 <Link href="/profile">
                   <Badge variant="sage">{user.name}</Badge>
@@ -85,31 +61,18 @@ export async function Navbar() {
           ) : (
             /* Marshal & Manager Session: DOM Excludes Player Links */
             <>
-              <Link
-                href="/marshal"
-                className="text-[#252724] font-semibold flex items-center gap-2"
-              >
-                <span className="w-2 h-2 rounded-full bg-[#5a8357] animate-pulse" />
+              <NavLink href="/marshal" activeIndicator>
                 Master Schedule
-              </Link>
-              <Link
-                href="/marshal/testimonials"
-                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
-              >
+              </NavLink>
+              <NavLink href="/marshal/testimonials" activeIndicator>
                 Testimonials
-              </Link>
-              <Link
-                href="/marshal/rentals"
-                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
-              >
+              </NavLink>
+              <NavLink href="/marshal/rentals" activeIndicator>
                 Equipment
-              </Link>
-              <Link
-                href="/marshal/settings"
-                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
-              >
+              </NavLink>
+              <NavLink href="/marshal/settings" activeIndicator>
                 Desk Settings
-              </Link>
+              </NavLink>
               <div className="flex items-center gap-3 pl-2 border-l border-black/8">
                 <Link href="/marshal/settings">
                   <Badge variant="neutral">
