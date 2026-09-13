@@ -68,15 +68,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 6. Prevent active authenticated users from visiting public auth pages (/login, /register)
-  if (isAuthRoute && session) {
-    if (session.role === Role.MARSHAL || session.role === Role.MANAGER) {
-      return NextResponse.redirect(new URL("/marshal", request.url));
-    }
-    return NextResponse.redirect(new URL("/schedule", request.url));
-  }
-
-  // 7. Marshal landing redirection
+  // 6. Marshal landing redirection
   if (pathname === "/" && session) {
     if (session.role === Role.MARSHAL || session.role === Role.MANAGER) {
       return NextResponse.redirect(new URL("/marshal", request.url));
