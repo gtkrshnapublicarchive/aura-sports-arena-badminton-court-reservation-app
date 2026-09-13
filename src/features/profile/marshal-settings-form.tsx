@@ -6,6 +6,7 @@ import { updateProfileAction } from "./update-profile.action";
 import { UserProfileData } from "./profile.types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 
 export function MarshalSettingsForm({ profile }: { profile: UserProfileData }) {
   const router = useRouter();
@@ -91,35 +92,27 @@ export function MarshalSettingsForm({ profile }: { profile: UserProfileData }) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-medium text-[#252724] mb-1.5">
-            Assigned Shift Preference
-          </label>
-          <select
-            value={shiftPreference}
-            onChange={(e) => setShiftPreference(e.target.value)}
-            className="w-full rounded-xl bg-white px-3.5 py-2.5 text-xs text-[#252724] border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#668c63]"
-          >
-            <option value="Morning Shift (07:00 - 15:00)">Morning Shift (07:00 - 15:00)</option>
-            <option value="Evening Shift (15:00 - 23:00)">Evening Shift (15:00 - 23:00)</option>
-            <option value="Full Arena Rotation">Full Arena Rotation</option>
-          </select>
-        </div>
+        <Select
+          label="Assigned Shift Preference"
+          value={shiftPreference}
+          onChange={setShiftPreference}
+          options={[
+            "Morning Shift (07:00 - 15:00)",
+            "Evening Shift (15:00 - 23:00)",
+            "Full Arena Rotation",
+          ]}
+        />
 
-        <div>
-          <label className="block text-xs font-medium text-[#252724] mb-1.5">
-            Intercom / Radio Frequency
-          </label>
-          <select
-            value={radioChannel}
-            onChange={(e) => setRadioChannel(e.target.value)}
-            className="w-full rounded-xl bg-white px-3.5 py-2.5 text-xs text-[#252724] border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#668c63]"
-          >
-            <option value="Channel 1 - Emergency & Security">Channel 1 - Emergency & Security</option>
-            <option value="Channel 2 - Court Marshals">Channel 2 - Court Marshals</option>
-            <option value="Channel 3 - Facilities & Cleaning">Channel 3 - Facilities & Cleaning</option>
-          </select>
-        </div>
+        <Select
+          label="Intercom / Radio Frequency"
+          value={radioChannel}
+          onChange={setRadioChannel}
+          options={[
+            "Channel 1 - Emergency & Security",
+            "Channel 2 - Court Marshals",
+            "Channel 3 - Facilities & Cleaning",
+          ]}
+        />
       </div>
 
       <Input

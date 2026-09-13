@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toggleMaintenanceAction } from "./actions/toggle-maintenance.action";
 import { MarshalSlotDetail } from "./marshal.types";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 
 export interface MaintenanceModalProps {
   slot: MarshalSlotDetail;
@@ -64,19 +65,17 @@ export function MaintenanceModal({ slot, isOpen, onClose }: MaintenanceModalProp
 
         {!isLocked && (
           <div className="mb-4">
-            <label className="block text-xs font-medium text-[#252724] mb-1.5">
-              Reason / Work Order
-            </label>
-            <select
+            <Select
+              label="Reason / Work Order"
               value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="w-full rounded-xl bg-white px-3 py-2 text-xs border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#668c63]"
-            >
-              <option value="Mat Cleaning & Disinfection">Mat Cleaning & Disinfection</option>
-              <option value="LED Lighting Calibration & Replacement">LED Lighting Calibration & Replacement</option>
-              <option value="Net Tension Adjustment">Net Tension Adjustment</option>
-              <option value="Arena Event / League Reserved">Arena Event / League Reserved</option>
-            </select>
+              onChange={setReason}
+              options={[
+                "Mat Cleaning & Disinfection",
+                "LED Lighting Calibration & Replacement",
+                "Net Tension Adjustment",
+                "Arena Event / League Reserved",
+              ]}
+            />
           </div>
         )}
 

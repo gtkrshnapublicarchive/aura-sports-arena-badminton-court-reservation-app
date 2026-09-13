@@ -6,6 +6,7 @@ import { updateProfileAction } from "./update-profile.action";
 import { UserProfileData } from "./profile.types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/select";
 
 export function PlayerSettingsForm({ profile }: { profile: UserProfileData }) {
   const router = useRouter();
@@ -91,35 +92,24 @@ export function PlayerSettingsForm({ profile }: { profile: UserProfileData }) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-xs font-medium text-[#252724] mb-1.5">
-            Badminton Skill Level
-          </label>
-          <select
-            value={skillLevel}
-            onChange={(e) => setSkillLevel(e.target.value)}
-            className="w-full rounded-xl bg-white px-3.5 py-2.5 text-xs text-[#252724] border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#668c63]"
-          >
-            <option value="Recreational / Beginner">Recreational / Beginner</option>
-            <option value="Intermediate Club Player">Intermediate Club Player</option>
-            <option value="League Player">League Player</option>
-            <option value="Competitive / Tournament">Competitive / Tournament</option>
-          </select>
-        </div>
+        <Select
+          label="Badminton Skill Level"
+          value={skillLevel}
+          onChange={setSkillLevel}
+          options={[
+            "Recreational / Beginner",
+            "Intermediate Club Player",
+            "League Player",
+            "Competitive / Tournament",
+          ]}
+        />
 
-        <div>
-          <label className="block text-xs font-medium text-[#252724] mb-1.5">
-            Dominant Hand
-          </label>
-          <select
-            value={dominantHand}
-            onChange={(e) => setDominantHand(e.target.value)}
-            className="w-full rounded-xl bg-white px-3.5 py-2.5 text-xs text-[#252724] border border-black/10 focus:outline-none focus:ring-2 focus:ring-[#668c63]"
-          >
-            <option value="Right-handed">Right-handed</option>
-            <option value="Left-handed">Left-handed</option>
-          </select>
-        </div>
+        <Select
+          label="Dominant Hand"
+          value={dominantHand}
+          onChange={setDominantHand}
+          options={["Right-handed", "Left-handed"]}
+        />
       </div>
 
       <Input
