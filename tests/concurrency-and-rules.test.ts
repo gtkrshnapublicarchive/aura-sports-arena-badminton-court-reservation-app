@@ -15,6 +15,7 @@ import { savePlayerTestimonialAction } from "../src/features/testimonials/action
 import { deleteTestimonialAction } from "../src/features/testimonials/actions/delete-testimonial.action";
 import { toggleTestimonialPublishAction } from "../src/features/testimonials/actions/toggle-testimonial-publish.action";
 import { getPublishedTestimonials, getUserTestimonial } from "../src/features/testimonials/queries/get-testimonials.query";
+import { updateRentalItemAction } from "../src/features/rentals/actions/update-rental.action";
 
 async function setSession(user: { id: string; email: string; name: string; role: Role }) {
   const token = await signSessionToken({
@@ -279,6 +280,45 @@ async function runTests() {
     "Player navigating to /marshal/testimonials is blocked and redirected to /login"
   );
 
+  const playerToMarshalRentals = await proxy(
+    new NextRequest("http://localhost:3000/marshal/rentals", {
+      headers: { cookie: `${AUTH_COOKIE_NAME}=${playerToken}` },
+    })
+  );
+  assert(
+    playerToMarshalRentals.status === 307 &&
+      Boolean(playerToMarshalRentals.headers.get("location")?.startsWith("http://localhost:3000/login")),
+    "Player navigating to /marshal/rentals is blocked and redirected to /login"
+  );
+
+  const playerToMarshalSettings = await proxy(
+    new NextRequest("http://localhost:3000/marshal/settings", {
+      headers: { cookie: `${AUTH_COOKIE_NAME}=${playerToken}` },
+    })
+  );
+  assert(
+    playerToMarshalSettings.status === 307 &&
+      Boolean(playerToMarshalSettings.headers.get("location")?.startsWith("http://localhost:3000/login")),
+    "Player navigating to /marshal/settings is blocked and redirected to /login"
+  );
+
+  const staffToken = await signSessionToken({
+    userId: marshal.id,
+    email: marshal.email,
+    name: marshal.name,
+    role: Role.MARSHAL,
+  });
+  const staffToProfileRedirect = await proxy(
+    new NextRequest("http://localhost:3000/profile", {
+      headers: { cookie: `${AUTH_COOKIE_NAME}=${staffToken}` },
+    })
+  );
+  assert(
+    staffToProfileRedirect.status === 307 &&
+      staffToProfileRedirect.headers.get("location") === "http://localhost:3000/marshal/settings",
+    "Staff marshal visiting /profile is automatically redirected to /marshal/settings"
+  );
+
   const switchSessionOnLogin = await proxy(
     new NextRequest("http://localhost:3000/login?switch=true", {
       headers: { cookie: `${AUTH_COOKIE_NAME}=${playerToken}` },
@@ -338,6 +378,36 @@ async function runTests() {
     await setSession(julian);
     const ownerDelete = await deleteTestimonialAction({ id: julianTestimonial.id });
     assert(ownerDelete.success, "Owner player successfully deleted testimonial");
+  }
+
+  // 10. Staff Equipment Rental Catalog Management Tests
+  console.log("\n[*] Running Staff Equipment Rental Catalog Tests...");
+  const sampleRental = await prisma.rentalItem.findFirst();
+  assert(sampleRental !== null, "Rental catalog item available for test");
+
+  if (sampleRental) {
+    // Player unauthorized attempt to update rental catalog
+    await setSession(julian);
+    const playerRentalUpdate = await updateRentalItemAction({
+      id: sampleRental.id,
+      isActive: false,
+    });
+    assert(!playerRentalUpdate.success, "Player unauthorized to modify equipment rental catalog");
+
+    // Staff marshal authorized update
+    await setSession(marshal);
+    const staffRentalUpdate = await updateRentalItemAction({
+      id: sampleRental.id,
+      ratePerUnit: 25,
+      isActive: true,
+    });
+    assert(staffRentalUpdate.success, "Staff marshal successfully updated rental catalog pricing and status");
+
+    const refreshedRental = await prisma.rentalItem.findUnique({ where: { id: sampleRental.id } });
+    assert(
+      refreshedRental?.ratePerUnit === 25 && refreshedRental?.isActive === true,
+      "Rental catalog record verified with updated rates in database"
+    );
   }
 
   console.log("───────────────────────────────────────────────────────────────");
