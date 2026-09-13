@@ -2,6 +2,7 @@ import { prisma } from "../src/core/db/client";
 import { createBookingAction } from "../src/features/bookings/create-booking.action";
 import { cancelBookingAction } from "../src/features/bookings/cancel-booking.action";
 import { toggleMaintenanceAction } from "../src/features/marshal/actions/toggle-maintenance.action";
+import { updateProfileAction } from "../src/features/profile/update-profile.action";
 import { signSessionToken } from "../src/core/auth/jwt";
 import { AUTH_COOKIE_NAME } from "../src/core/auth/auth.types";
 import { setTestCookie, clearTestCookies } from "../src/core/auth/cookies";
@@ -171,6 +172,38 @@ async function runTests() {
     },
   });
   assert(freedSlot?.status === SlotStatus.AVAILABLE, "Court slot immediately restored to AVAILABLE");
+
+  // 6. Profile Settings Tests (Role-Specific)
+  console.log("\n[*] Running Role-Specific Profile Settings Tests...");
+  await setSession(julian);
+  const updatePlayerRes = await updateProfileAction({
+    name: "Julian H. (Updated)",
+    phone: "+1-555-0999",
+    skillLevel: "Competitive / Tournament",
+  });
+  assert(updatePlayerRes.success, "Player successfully updated display name and mobile contact");
+
+  const refreshedPlayer = await prisma.user.findUnique({ where: { id: julian.id } });
+  assert(
+    refreshedPlayer?.name === "Julian H. (Updated)" && refreshedPlayer?.phone === "+1-555-0999",
+    "Player database record verified with new credentials"
+  );
+
+  // Marshal profile update test
+  await setSession(marshal);
+  const updateMarshalRes = await updateProfileAction({
+    name: "Tariq Shift Marshal (Lead)",
+    phone: "+1-555-0888",
+    shiftPreference: "Evening Shift (15:00 - 23:00)",
+  });
+  assert(updateMarshalRes.success, "Staff marshal successfully updated shift contact settings");
+
+  // Profile validation test (Blank name rejected)
+  const invalidProfileRes = await updateProfileAction({
+    name: "A",
+    phone: "123",
+  });
+  assert(!invalidProfileRes.success, "Rejected invalid profile input (short name/phone)");
 
   console.log("───────────────────────────────────────────────────────────────");
   console.log(`Results: ${passed}/${total} test suites passed cleanly.`);

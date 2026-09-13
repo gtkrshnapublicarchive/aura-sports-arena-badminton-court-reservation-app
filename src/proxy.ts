@@ -11,7 +11,9 @@ export async function proxy(request: NextRequest) {
 
   const isMarshalRoute = pathname.startsWith("/marshal");
   const isPlayerRestrictedRoute =
-    pathname.startsWith("/book") || pathname.startsWith("/my-bookings");
+    pathname.startsWith("/book") ||
+    pathname.startsWith("/my-bookings") ||
+    pathname.startsWith("/profile");
   const isAuthRoute = pathname === "/login" || pathname === "/register";
 
   // 1. Marshal Portal Access Protection

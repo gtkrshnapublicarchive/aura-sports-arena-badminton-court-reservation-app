@@ -62,8 +62,16 @@ export async function Navbar() {
               >
                 My Bookings
               </Link>
+              <Link
+                href="/profile"
+                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
+              >
+                Profile
+              </Link>
               <div className="flex items-center gap-3 pl-2 border-l border-black/8">
-                <Badge variant="sage">{user.name}</Badge>
+                <Link href="/profile">
+                  <Badge variant="sage">{user.name}</Badge>
+                </Link>
                 <form action={logoutAction}>
                   <button
                     type="submit"
@@ -84,10 +92,18 @@ export async function Navbar() {
                 <span className="w-2 h-2 rounded-full bg-[#5a8357] animate-pulse" />
                 Master Schedule
               </Link>
+              <Link
+                href="/profile"
+                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
+              >
+                Profile
+              </Link>
               <div className="flex items-center gap-3 pl-2 border-l border-black/8">
-                <Badge variant="neutral">
-                  {user.role === Role.MANAGER ? "Manager" : "Marshal"}: {user.name}
-                </Badge>
+                <Link href="/profile">
+                  <Badge variant="neutral">
+                    {user.role === Role.MANAGER ? "Manager" : "Marshal"}: {user.name}
+                  </Badge>
+                </Link>
                 <form action={logoutAction}>
                   <button
                     type="submit"
