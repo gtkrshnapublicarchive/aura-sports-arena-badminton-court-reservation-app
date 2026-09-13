@@ -4,7 +4,7 @@ import { verifySessionToken } from "./core/auth/jwt";
 import { AUTH_COOKIE_NAME } from "./core/auth/auth.types";
 import { Role } from "@prisma/client";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
   const session = token ? await verifySessionToken(token) : null;
@@ -59,3 +59,5 @@ export const config = {
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
+
+export default proxy;
