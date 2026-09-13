@@ -3,6 +3,7 @@ import { createBookingAction } from "../src/features/bookings/create-booking.act
 import { cancelBookingAction } from "../src/features/bookings/cancel-booking.action";
 import { toggleMaintenanceAction } from "../src/features/marshal/actions/toggle-maintenance.action";
 import { updateProfileAction } from "../src/features/profile/update-profile.action";
+import { loginAction } from "../src/features/auth/login.action";
 import { signSessionToken } from "../src/core/auth/jwt";
 import { AUTH_COOKIE_NAME } from "../src/core/auth/auth.types";
 import { setTestCookie, clearTestCookies } from "../src/core/auth/cookies";
@@ -204,6 +205,29 @@ async function runTests() {
     phone: "123",
   });
   assert(!invalidProfileRes.success, "Rejected invalid profile input (short name/phone)");
+
+  // 7. Security Isolation: Public Portal Staff Block
+  console.log("\n[*] Running Public Authentication Isolation Tests...");
+  const publicStaffLogin = await loginAction({
+    email: "marshal@aura.local",
+    password: "password123",
+    isStaff: false,
+  });
+  assert(!publicStaffLogin.success, "Rejected staff login attempt on public player portal");
+
+  const legitimateStaffLogin = await loginAction({
+    email: "marshal@aura.local",
+    password: "password123",
+    isStaff: true,
+  });
+  assert(legitimateStaffLogin.success, "Authorized staff login on isolated /marshal/login portal");
+
+  const playerStaffPortalAttempt = await loginAction({
+    email: "julian@example.com",
+    password: "password123",
+    isStaff: true,
+  });
+  assert(!playerStaffPortalAttempt.success, "Blocked player login attempt on staff marshal portal");
 
   console.log("───────────────────────────────────────────────────────────────");
   console.log(`Results: ${passed}/${total} test suites passed cleanly.`);

@@ -9,7 +9,8 @@ export async function proxy(request: NextRequest) {
   const token = request.cookies.get(AUTH_COOKIE_NAME)?.value;
   const session = token ? await verifySessionToken(token) : null;
 
-  const isMarshalRoute = pathname.startsWith("/marshal");
+  const isMarshalLogin = pathname === "/marshal/login";
+  const isMarshalRoute = pathname.startsWith("/marshal") && !isMarshalLogin;
   const isPlayerRestrictedRoute =
     pathname.startsWith("/book") ||
     pathname.startsWith("/my-bookings") ||
@@ -19,10 +20,16 @@ export async function proxy(request: NextRequest) {
   // 1. Marshal Portal Access Protection
   if (isMarshalRoute) {
     if (!session || (session.role !== Role.MARSHAL && session.role !== Role.MANAGER)) {
-      const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("staff", "true");
+      const loginUrl = new URL("/marshal/login", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // 2. Marshal already logged in visiting marshal login
+  if (isMarshalLogin && session) {
+    if (session.role === Role.MARSHAL || session.role === Role.MANAGER) {
+      return NextResponse.redirect(new URL("/marshal", request.url));
     }
   }
 

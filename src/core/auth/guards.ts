@@ -23,7 +23,7 @@ export async function requirePlayer(): Promise<AuthUser> {
 export async function requireMarshal(): Promise<AuthUser> {
   const user = await getCurrentUser();
   if (!user || (user.role !== Role.MARSHAL && user.role !== Role.MANAGER)) {
-    redirect("/login?staff=true");
+    redirect("/marshal/login");
   }
   return user;
 }

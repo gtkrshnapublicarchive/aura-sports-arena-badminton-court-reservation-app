@@ -38,6 +38,14 @@ export async function loginAction(
     return { success: false, error: "Invalid email or password" };
   }
 
+  // Security Hardening: Block staff accounts from logging in through the public player form
+  if (!isStaff && user.role !== Role.PLAYER) {
+    return {
+      success: false,
+      error: "Invalid email or password",
+    };
+  }
+
   // Enforce staff role check if attempting staff login
   if (isStaff && user.role === Role.PLAYER) {
     return {

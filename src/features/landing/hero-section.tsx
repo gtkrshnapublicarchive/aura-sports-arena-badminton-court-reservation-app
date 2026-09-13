@@ -30,10 +30,10 @@ export function HeroSection({ user }: { user: AuthUser | null }) {
           </Link>
           {!user ? (
             <Link
-              href="/login?staff=true"
+              href="/register"
               className="px-6 py-3.5 rounded-xl border border-black/10 bg-white hover:bg-[#fbfbfa] text-[#252724] text-sm font-medium transition-colors"
             >
-              Staff / Marshal Console
+              Register Player Account
             </Link>
           ) : user.role === Role.PLAYER ? (
             <Link
