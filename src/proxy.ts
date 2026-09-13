@@ -13,8 +13,8 @@ export async function proxy(request: NextRequest) {
   const isMarshalRoute = pathname.startsWith("/marshal") && !isMarshalLogin;
   const isPlayerRestrictedRoute =
     pathname.startsWith("/book") ||
-    pathname.startsWith("/my-bookings") ||
-    pathname.startsWith("/profile");
+    pathname.startsWith("/my-bookings");
+  const isProfileRoute = pathname.startsWith("/profile");
   const isAuthRoute = pathname === "/login" || pathname === "/register";
 
   // 1. Marshal Portal Access Protection
@@ -33,7 +33,16 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 2. Player Restricted Routes
+  // 3. Profile Route (Universal for all authenticated roles)
+  if (isProfileRoute) {
+    if (!session) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // 4. Player Restricted Routes (Booking checkout & personal player bookings)
   if (isPlayerRestrictedRoute) {
     if (!session) {
       const loginUrl = new URL("/login", request.url);

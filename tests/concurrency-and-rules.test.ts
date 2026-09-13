@@ -3,6 +3,7 @@ import { createBookingAction } from "../src/features/bookings/create-booking.act
 import { cancelBookingAction } from "../src/features/bookings/cancel-booking.action";
 import { toggleMaintenanceAction } from "../src/features/marshal/actions/toggle-maintenance.action";
 import { updateProfileAction } from "../src/features/profile/update-profile.action";
+import { getUserProfile } from "../src/features/profile/get-profile.query";
 import { loginAction } from "../src/features/auth/login.action";
 import { signSessionToken } from "../src/core/auth/jwt";
 import { AUTH_COOKIE_NAME } from "../src/core/auth/auth.types";
@@ -198,6 +199,12 @@ async function runTests() {
     shiftPreference: "Evening Shift (15:00 - 23:00)",
   });
   assert(updateMarshalRes.success, "Staff marshal successfully updated shift contact settings");
+
+  const marshalProfile = await getUserProfile(marshal.id);
+  assert(
+    marshalProfile !== null && marshalProfile.role === Role.MARSHAL,
+    "Marshal profile data successfully retrieved with operational stats"
+  );
 
   // Profile validation test (Blank name rejected)
   const invalidProfileRes = await updateProfileAction({
