@@ -45,6 +45,7 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   bookings     Booking[]
+  testimonials Testimonial[]
 
   @@map("users")
 }
@@ -133,4 +134,22 @@ model BookingRentalItem {
 
   @@unique([bookingId, rentalItemId])
   @@map("booking_rental_items")
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  author      String
+  role        String
+  tag         String   @default("Verified Player")
+  quote       String   @db.Text
+  rating      Int      @default(5)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isPublished])
+  @@map("testimonials")
 }
