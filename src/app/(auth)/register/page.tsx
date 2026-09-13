@@ -1,0 +1,20 @@
+import { RegisterForm } from "@/features/auth/register-form";
+import { Navbar } from "@/components/ui/navbar";
+import Link from "next/link";
+
+export default function RegisterPage() {
+  return (
+    <div className="min-h-screen flex flex-col bg-[#fbfbfa]">
+      <Navbar />
+      <main className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12">
+        <RegisterForm />
+        <p className="text-xs text-neutral-500 mt-6">
+          Already have an account?{" "}
+          <Link href="/login" className="text-[#5a8357] font-medium hover:underline">
+            Sign in here
+          </Link>
+        </p>
+      </main>
+    </div>
+  );
+}
