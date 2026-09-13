@@ -1,12 +1,12 @@
 import { requireMarshal } from "@/core/auth/guards";
-import { getAllTestimonials } from "@/features/testimonials/queries/get-testimonials.query";
-import { StaffTestimonialManager } from "@/features/testimonials/staff-testimonial-manager";
+import { getAllRentalItemsForStaff } from "@/features/rentals/get-rentals.query";
+import { StaffRentalManager } from "@/features/rentals/staff-rental-manager";
 import { MarshalNavTabs } from "@/features/marshal/marshal-nav-tabs";
 import { Navbar } from "@/components/ui/navbar";
 
-export default async function MarshalTestimonialsPage() {
+export default async function MarshalRentalsPage() {
   const staff = await requireMarshal();
-  const testimonials = await getAllTestimonials();
+  const rentalItems = await getAllRentalItemsForStaff();
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fbfbfa]">
@@ -22,17 +22,17 @@ export default async function MarshalTestimonialsPage() {
               </span>
             </div>
             <h1 className="text-3xl font-serif font-semibold text-[#252724] mt-2">
-              Testimonials Moderation Console
+              Equipment Rental Inventory
             </h1>
             <p className="text-xs text-neutral-500 mt-0.5">
-              Operator: {staff.name} ({staff.role}) - Review, approve, publish, and moderate member feedback displayed on the arena landing page.
+              Operator: {staff.name} ({staff.role}) - Manage rental racket and shuttlecock availability and counter rates.
             </p>
           </div>
 
           <MarshalNavTabs />
         </div>
 
-        <StaffTestimonialManager initialTestimonials={testimonials} />
+        <StaffRentalManager initialItems={rentalItems} />
       </main>
     </div>
   );

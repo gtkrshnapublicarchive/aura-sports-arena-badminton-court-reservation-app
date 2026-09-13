@@ -3,8 +3,6 @@ import { getUserProfile } from "@/features/profile/get-profile.query";
 import { Navbar } from "@/components/ui/navbar";
 import { ProfileHeader } from "@/features/profile/profile-header";
 import { PlayerSettingsForm } from "@/features/profile/player-settings-form";
-import { MarshalSettingsForm } from "@/features/profile/marshal-settings-form";
-import { ManagerSettingsForm } from "@/features/profile/manager-settings-form";
 import { getUserTestimonial } from "@/features/testimonials/queries/get-testimonials.query";
 import { PlayerTestimonialForm } from "@/features/testimonials/player-testimonial-form";
 import { redirect } from "next/navigation";
@@ -17,8 +15,11 @@ export default async function ProfileSettingsPage() {
     redirect("/login");
   }
 
-  const playerTestimonial =
-    profile.role === "PLAYER" ? await getUserTestimonial(profile.id) : null;
+  if (profile.role !== "PLAYER") {
+    redirect("/marshal/settings");
+  }
+
+  const playerTestimonial = await getUserTestimonial(profile.id);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#fbfbfa]">
@@ -30,30 +31,20 @@ export default async function ProfileSettingsPage() {
             Account Management
           </span>
           <h1 className="text-3xl font-serif font-semibold text-[#252724] mt-2">
-            Profile Settings
+            Player Profile Settings
           </h1>
           <p className="text-xs text-neutral-500 mt-0.5">
-            Role-tailored settings and operational preferences for Aura Sports Arena.
+            Manage your player credentials, badminton preferences, and public arena reviews.
           </p>
         </div>
 
         <ProfileHeader profile={profile} />
 
-        {profile.role === "PLAYER" && (
-          <>
-            <PlayerTestimonialForm
-              initialTestimonial={playerTestimonial}
-              userName={profile.name}
-            />
-            <PlayerSettingsForm profile={profile} />
-          </>
-        )}
-        {profile.role === "MARSHAL" && (
-          <MarshalSettingsForm profile={profile} />
-        )}
-        {profile.role === "MANAGER" && (
-          <ManagerSettingsForm profile={profile} />
-        )}
+        <PlayerTestimonialForm
+          initialTestimonial={playerTestimonial}
+          userName={profile.name}
+        />
+        <PlayerSettingsForm profile={profile} />
       </main>
     </div>
   );

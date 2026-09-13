@@ -47,12 +47,15 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 4. Profile Route (Universal for all authenticated roles)
+  // 4. Profile Route (Players use /profile, Staff redirected to /marshal/settings)
   if (isProfileRoute) {
     if (!session) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
+    }
+    if (session.role === Role.MARSHAL || session.role === Role.MANAGER) {
+      return NextResponse.redirect(new URL("/marshal/settings", request.url));
     }
   }
 

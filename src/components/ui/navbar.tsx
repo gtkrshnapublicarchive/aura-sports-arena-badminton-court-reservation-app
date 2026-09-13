@@ -99,13 +99,19 @@ export async function Navbar() {
                 Testimonials
               </Link>
               <Link
-                href="/profile"
+                href="/marshal/rentals"
                 className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
               >
-                Profile
+                Equipment
+              </Link>
+              <Link
+                href="/marshal/settings"
+                className="text-neutral-600 hover:text-[#252724] font-medium transition-colors"
+              >
+                Desk Settings
               </Link>
               <div className="flex items-center gap-3 pl-2 border-l border-black/8">
-                <Link href="/profile">
+                <Link href="/marshal/settings">
                   <Badge variant="neutral">
                     {user.role === Role.MANAGER ? "Manager" : "Marshal"}: {user.name}
                   </Badge>
