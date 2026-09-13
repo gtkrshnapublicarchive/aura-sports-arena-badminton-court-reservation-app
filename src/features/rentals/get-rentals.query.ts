@@ -23,3 +23,22 @@ export async function getActiveRentalItems(): Promise<RentalCatalogItem[]> {
     maxQuantityPerBooking: i.maxQuantityPerBooking,
   }));
 }
+
+export interface StaffRentalItem extends RentalCatalogItem {
+  isActive: boolean;
+}
+
+export async function getAllRentalItemsForStaff(): Promise<StaffRentalItem[]> {
+  const items = await prisma.rentalItem.findMany({
+    orderBy: [{ itemType: "asc" }, { ratePerUnit: "asc" }],
+  });
+
+  return items.map((i) => ({
+    id: i.id,
+    name: i.name,
+    itemType: i.itemType,
+    ratePerUnit: i.ratePerUnit,
+    maxQuantityPerBooking: i.maxQuantityPerBooking,
+    isActive: i.isActive,
+  }));
+}
