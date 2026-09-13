@@ -1,8 +1,16 @@
 import { RegisterForm } from "@/features/auth/register-form";
+import { getCurrentUser } from "@/core/auth/session";
+import { redirect } from "next/navigation";
+import { Role } from "@prisma/client";
 import { Navbar } from "@/components/ui/navbar";
 import Link from "next/link";
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const user = await getCurrentUser();
+  if (user) {
+    redirect(user.role === Role.PLAYER ? "/schedule" : "/marshal");
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#fbfbfa]">
       <Navbar />

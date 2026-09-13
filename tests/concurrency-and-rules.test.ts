@@ -9,6 +9,8 @@ import { signSessionToken } from "../src/core/auth/jwt";
 import { AUTH_COOKIE_NAME } from "../src/core/auth/auth.types";
 import { setTestCookie, clearTestCookies } from "../src/core/auth/cookies";
 import { Role, SlotStatus } from "@prisma/client";
+import { NextRequest } from "next/server";
+import { proxy } from "../src/proxy";
 
 async function setSession(user: { id: string; email: string; name: string; role: Role }) {
   const token = await signSessionToken({
@@ -235,6 +237,42 @@ async function runTests() {
     isStaff: true,
   });
   assert(!playerStaffPortalAttempt.success, "Blocked player login attempt on staff marshal portal");
+
+  // 8. Proxy Route & Gateway Protection Tests
+  console.log("\n[*] Running Proxy Gateway & Access Protection Tests...");
+  const playerToken = await signSessionToken({
+    userId: julian.id,
+    email: julian.email,
+    name: julian.name,
+    role: Role.PLAYER,
+  });
+  const playerToMarshalLogin = await proxy(
+    new NextRequest("http://localhost:3000/marshal/login", {
+      headers: { cookie: `${AUTH_COOKIE_NAME}=${playerToken}` },
+    })
+  );
+  assert(
+    playerToMarshalLogin.status === 307 &&
+      playerToMarshalLogin.headers.get("location") === "http://localhost:3000/schedule",
+    "Player visiting staff login gateway is locked out and redirected to /schedule"
+  );
+
+  const guestToMarshalRoute = await proxy(new NextRequest("http://localhost:3000/marshal"));
+  assert(
+    guestToMarshalRoute.status === 307 &&
+      Boolean(guestToMarshalRoute.headers.get("location")?.startsWith("http://localhost:3000/login")),
+    "Unauthorized visitor to /marshal is redirected to /login per PRD 6.3"
+  );
+
+  const switchSessionOnLogin = await proxy(
+    new NextRequest("http://localhost:3000/login?switch=true", {
+      headers: { cookie: `${AUTH_COOKIE_NAME}=${playerToken}` },
+    })
+  );
+  assert(
+    switchSessionOnLogin.cookies.get(AUTH_COOKIE_NAME)?.value === "",
+    "Explicit switch request to /login?switch=true purges active session cookie"
+  );
 
   console.log("───────────────────────────────────────────────────────────────");
   console.log(`Results: ${passed}/${total} test suites passed cleanly.`);

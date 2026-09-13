@@ -1,7 +1,19 @@
 import { MarshalLoginForm } from "@/features/marshal/marshal-login-form";
+import { getCurrentUser } from "@/core/auth/session";
+import { redirect } from "next/navigation";
+import { Role } from "@prisma/client";
 import Link from "next/link";
 
-export default function MarshalLoginPage() {
+export default async function MarshalLoginPage() {
+  const user = await getCurrentUser();
+  if (user) {
+    if (user.role === Role.PLAYER) {
+      redirect("/schedule");
+    } else {
+      redirect("/marshal");
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#fbfbfa]">
       <header className="w-full bg-white/80 backdrop-blur-md border-b border-black/8 py-4 px-6">

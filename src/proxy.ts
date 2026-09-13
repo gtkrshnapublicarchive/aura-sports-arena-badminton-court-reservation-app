@@ -17,23 +17,37 @@ export async function proxy(request: NextRequest) {
   const isProfileRoute = pathname.startsWith("/profile");
   const isAuthRoute = pathname === "/login" || pathname === "/register";
 
-  // 1. Marshal Portal Access Protection
+  // 1. Account switch override: if visiting auth route with switch param, clear session
+  if (isAuthRoute && request.nextUrl.searchParams.get("switch") === "true") {
+    const res = NextResponse.next();
+    res.cookies.delete(AUTH_COOKIE_NAME);
+    return res;
+  }
+
+  // 2. Marshal Route Access Protection (PRD 6.3):
+  // Non-staff visitors navigating to /marshal are redirected to /login (not /marshal/login)
+  // to avoid leaking the internal staff portal URL to unauthorized users.
   if (isMarshalRoute) {
     if (!session || (session.role !== Role.MARSHAL && session.role !== Role.MANAGER)) {
-      const loginUrl = new URL("/marshal/login", request.url);
+      const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);
     }
   }
 
-  // 2. Marshal already logged in visiting marshal login
+  // 3. Staff Login Gateway Protection:
+  // - If staff already logged in, redirect to /marshal console
+  // - If a player is logged in, block access to staff gateway and redirect to /schedule
   if (isMarshalLogin && session) {
     if (session.role === Role.MARSHAL || session.role === Role.MANAGER) {
       return NextResponse.redirect(new URL("/marshal", request.url));
     }
+    if (session.role === Role.PLAYER) {
+      return NextResponse.redirect(new URL("/schedule", request.url));
+    }
   }
 
-  // 3. Profile Route (Universal for all authenticated roles)
+  // 4. Profile Route (Universal for all authenticated roles)
   if (isProfileRoute) {
     if (!session) {
       const loginUrl = new URL("/login", request.url);
@@ -42,7 +56,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 4. Player Restricted Routes (Booking checkout & personal player bookings)
+  // 5. Player Restricted Routes (Booking checkout & personal player bookings)
   if (isPlayerRestrictedRoute) {
     if (!session) {
       const loginUrl = new URL("/login", request.url);
@@ -54,7 +68,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 3. Prevent logged-in users from seeing login/register
+  // 6. Prevent active authenticated users from visiting public auth pages (/login, /register)
   if (isAuthRoute && session) {
     if (session.role === Role.MARSHAL || session.role === Role.MANAGER) {
       return NextResponse.redirect(new URL("/marshal", request.url));
@@ -62,7 +76,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/schedule", request.url));
   }
 
-  // 4. Marshal landing redirection
+  // 7. Marshal landing redirection
   if (pathname === "/" && session) {
     if (session.role === Role.MARSHAL || session.role === Role.MANAGER) {
       return NextResponse.redirect(new URL("/marshal", request.url));
