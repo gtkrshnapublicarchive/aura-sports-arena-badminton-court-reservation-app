@@ -7,7 +7,6 @@ import { MarshalSettingsForm } from "@/features/profile/marshal-settings-form";
 import { ManagerSettingsForm } from "@/features/profile/manager-settings-form";
 import { getUserTestimonial } from "@/features/testimonials/queries/get-testimonials.query";
 import { PlayerTestimonialForm } from "@/features/testimonials/player-testimonial-form";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function ProfileSettingsPage() {
@@ -50,48 +49,10 @@ export default async function ProfileSettingsPage() {
           </>
         )}
         {profile.role === "MARSHAL" && (
-          <>
-            <MarshalSettingsForm profile={profile} />
-            <div className="p-5 rounded-2xl border border-black/8 bg-white shadow-2xs flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-serif font-semibold text-[#252724]">
-                  Testimonials Moderation
-                </h4>
-                <p className="text-xs text-neutral-500 mt-0.5">
-                  Manage and approve public reviews on the dedicated staff console.
-                </p>
-              </div>
-              <Link
-                href="/marshal/testimonials"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#252724] hover:bg-[#3b3e39] text-white text-xs font-medium transition-colors"
-              >
-                <span>Open Moderation Console</span>
-                <span>&rarr;</span>
-              </Link>
-            </div>
-          </>
+          <MarshalSettingsForm profile={profile} />
         )}
         {profile.role === "MANAGER" && (
-          <>
-            <ManagerSettingsForm profile={profile} />
-            <div className="p-5 rounded-2xl border border-black/8 bg-white shadow-2xs flex items-center justify-between">
-              <div>
-                <h4 className="text-sm font-serif font-semibold text-[#252724]">
-                  Testimonials Moderation
-                </h4>
-                <p className="text-xs text-neutral-500 mt-0.5">
-                  Manage and approve public reviews on the dedicated staff console.
-                </p>
-              </div>
-              <Link
-                href="/marshal/testimonials"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#252724] hover:bg-[#3b3e39] text-white text-xs font-medium transition-colors"
-              >
-                <span>Open Moderation Console</span>
-                <span>&rarr;</span>
-              </Link>
-            </div>
-          </>
+          <ManagerSettingsForm profile={profile} />
         )}
       </main>
     </div>
